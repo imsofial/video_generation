@@ -59,7 +59,7 @@ py -m http.server 8000
 
 ### Additional Notes
 
-* All `.ply` files are in the `raw_data` folder. They were converted using **superspl.at**.
+* All `.ply` were converted using **superspl.at** but was not loaded because of size.
 * For path planning, random steps in the range `(0.01, 0.05)` were used for every new point.
 * Video are saved in webm format, but converted manually for github.*
 
