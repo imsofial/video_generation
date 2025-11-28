@@ -93,6 +93,29 @@
         targetPosition.set(x, z, y);
         targetLookAt.set(x, z, y + 1);
       }
+      function interpolatePath(path, targetLength) {
+        const result = [];
+        for (let i = 0; i < targetLength; i++) {
+          const t = i / (targetLength - 1) * (path.length - 1);
+          const idx = Math.floor(t);
+          const frac = t - idx;
+          if (idx >= path.length - 1) {
+            result.push(path[path.length - 1]);
+          } else {
+            const p0 = path[idx], p1 = path[idx + 1];
+            result.push([
+              p0[0] + (p1[0] - p0[0]) * frac,
+              p0[1] + (p1[1] - p0[1]) * frac,
+              p0[2] + (p1[2] - p0[2]) * frac
+            ]);
+          }
+        }
+        return result;
+      }
+
+// затем после загрузки path из JSON
+path = interpolatePath(path, 1800); // 1800 точек для 60 секунд при 30 FPS
+
 
       function initCameraFromFirstPose() {
         if (!path.length) return;
@@ -147,6 +170,7 @@
         .then(data => {
           if (!Array.isArray(data)) throw new Error("smooth_panorama_path.json is not an array");
           path = data.map(p => p.map(v => parseFloat(v)));
+          path = interpolatePath(path, RECORD_SECONDS * STREAM_FPS);
           console.log("Loaded path with", path.length, "poses");
           loadingEl.textContent = "Loaded – starting tour";
           if (path.length === 0) { loadingEl.textContent = "Path is EMPTY (0 poses)"; return; }
